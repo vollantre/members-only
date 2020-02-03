@@ -4,11 +4,13 @@ const router = express.Router()
 const userController = require('../controllers/userController')
 
 /* GET home page. */
-router.get('/', (req, res) => res.send('NICE'))
+router.get('/', (req, res) => {
+  res.send(req.user)
+})
 
-router.get('/signup', userController.register_get)
+router.get('/register', userController.register_get)
 
-router.post('/signup', userController.register_post)
+router.post('/register', userController.register_post)
 
 router.get('/login', userController.login_get)
 

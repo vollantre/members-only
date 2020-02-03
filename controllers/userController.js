@@ -41,7 +41,7 @@ exports.passport = passport
 
 //Display sign-up form
 exports.register_get = (req, res) => {
-  res.render('signup_form', { title: "Register to Members Only" })
+  res.render('register_form', { title: "Register to Members Only" })
 }
 
 //Handle user registration on POST
@@ -94,7 +94,7 @@ exports.register_post = [
 
       //Checking if there is error
       if(!errors.isEmpty()){//Proceed to rerender the form with some data and error messages
-        res.render('signup_form', { title: 'Register to Members Only', user, errors: errors.array() })
+        res.render('register_form', { title: 'Register to Members Only', user, errors: errors.array() })
       } else {
         await user.save()
 
