@@ -1,6 +1,43 @@
 const User = require('../models/user')
 const validator = require('express-validator')
 const bcrypt = require('bcryptjs')
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
+
+//Setting up the LocalStrategy
+passport.use(
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      const user = await User.findOne({ username })
+
+      if(!user){
+        return done(null, false, { msg: "Incorrect username" })
+      }
+
+      const match = await bcrypt.compare(password, user.password)
+
+      if (match) {
+        return done(null, user)
+      } else {
+        return done(null, false, { msg: "Incorrect password" })
+      }
+    } catch (e) {
+      done(err)
+    }
+  })
+)
+
+passport.serializeUser((user, done) => {
+  done(null, user.id)
+})
+
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => {
+    done(err, user)
+  })
+})
+
+exports.passport = passport
 
 //Display sign-up form
 exports.register_get = (req, res) => {
@@ -73,6 +110,7 @@ exports.login_get = (req, res) => {
   res.render('login_form', { title: 'Log in' })
 }
 
-exports.login_post = (req, res, next) => {
-  res.send('NOT IMPLEMENTED: Login on POST')
-}
+exports.login_post = passport.authenticate("local", {
+  successRedirect: "/",
+  failureRedirect: "/login"
+})
