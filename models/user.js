@@ -3,11 +3,11 @@ const Schema = mongoose.Schema
 
 //Setting up the schema for user model
 const userSchema = new Schema({
-  first_name: {
+  firstName: {
     type: String,
     required: true
   },
-  last_name: {
+  lastName: {
     type: String,
     required: true
   },
@@ -33,7 +33,7 @@ const userSchema = new Schema({
 userSchema
   .virtual('fullname')
   .get(function() {
-    return this.first_name + ' ' + this.last_name
+    return this.firstName + ' ' + this.lastName
   })
 
 //Export model

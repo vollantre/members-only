@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const user_controller = require('../controllers/userController')
+const userController = require('../controllers/userController')
 /* GET users listing. */
-router.post('/create', user_controller.create)
+router.post('/', (req, res) => {
+  res.send('aaaaaa')
+})
 
 module.exports = router

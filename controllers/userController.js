@@ -4,21 +4,53 @@ const bcrypt = require('bcryptjs')
 
 exports.create = [
   //Validate fields
-  validator.body('first_name', 'First name required').isLength({ min: 1 }).trim(),
-  validator.body('last_name', 'Last name required').isLength({ min: 1 }).trim(),
-  validator.body('username', 'Username required').isLength({ min: 1 }).trim(),
-  validator.body('password', 'Password required').isLength({ min: 5 }),
-  validator.body('confirm_password','Password confirmation required').isLength({ min: 5 }),
+  validator.check('firstName', 'First name required').isLength({ min: 1 }).trim(),
+  validator.check('lastName', 'Last name required').isLength({ min: 1 }).trim(),
+  validator.check('username', 'Username required')
+    .isLength({ min: 1 }).trim()
+    .custom(async value => {
+      const userExists = await User.findOne({ 'username':  value})
+      if(userExists) {
+        throw new Error('Username already in use')
+      }
+    }),
+  validator.check("password")
+    .isLength({ min: 4 }).withMessage('Password must be at least 5 chars long'),
+  validator.check("confirmPassword")
+    .custom((value, { req }) => {
+        if (value !== req.body.password) {
+            // trow error if passwords do not match
+            throw new Error("Password confirmation does not match password");
+        } else {
+            return value;
+        }
+    }),
 
   //Sanitize fields
-  validator.sanitizeBody('first_name').escape(),
-  validator.sanitizeBody('last_name').escape(),
+  validator.body('*').escape(),
 
+  //Process request after validation and sanitization
   async (req, res, next) => {
     try {
-      console.log(req.body)
-      User.findOne({'username': req.body.username})
-      res.redirect('/')
+      //Extract the validation errors from a request.
+      const errors = validator.validationResult(req)
+
+      //Create a user with escaped and trimmed data
+      const user = new User({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        username: req.body.username,
+      })
+
+      //Checking if there is error
+      if(!errors.isEmpty()){//Proceed to rerender the form with some data and error messages
+        res.render('signup_form', { title: 'Register to Members Only', user, errors: errors.array() })
+      } else {
+        if(req.body.password !== req.body.confirmPassword){
+          res.render('signup_form', {})
+        }
+        const hashedPassword = await bcrypt.hash()
+      }
     } catch(e) {
       next(e)
     }
