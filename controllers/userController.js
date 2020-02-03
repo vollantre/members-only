@@ -29,6 +29,12 @@ exports.create = [
   //Sanitize fields
   validator.body('*').escape(),
 
+  //Hash password with bcrypt
+  async (req, res, next) => {
+    req.body.password = await bcrypt.hash(req.body.password, 10)
+    next()
+  },
+
   //Process request after validation and sanitization
   async (req, res, next) => {
     try {
@@ -40,16 +46,16 @@ exports.create = [
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         username: req.body.username,
+        password: req.body.password
       })
 
       //Checking if there is error
       if(!errors.isEmpty()){//Proceed to rerender the form with some data and error messages
         res.render('signup_form', { title: 'Register to Members Only', user, errors: errors.array() })
       } else {
-        if(req.body.password !== req.body.confirmPassword){
-          res.render('signup_form', {})
-        }
-        const hashedPassword = await bcrypt.hash()
+        await user.save()
+
+        res.redirect('/')
       }
     } catch(e) {
       next(e)
