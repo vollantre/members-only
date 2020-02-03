@@ -2,11 +2,13 @@ const User = require('../models/user')
 const validator = require('express-validator')
 const bcrypt = require('bcryptjs')
 
-exports.create_get = (req, res) => {
+//Display sign-up form
+exports.register_get = (req, res) => {
   res.render('signup_form', { title: "Register to Members Only" })
 }
 
-exports.create_post = [
+//Handle user registration on POST
+exports.register_post = [
   //Validate fields
   validator.check('firstName', 'First name required').isLength({ min: 1 }).trim(),
   validator.check('lastName', 'Last name required').isLength({ min: 1 }).trim(),
@@ -66,3 +68,11 @@ exports.create_post = [
     }
   }
 ]
+
+exports.login_get = (req, res) => {
+  res.render('login_form', { title: 'Log in' })
+}
+
+exports.login_post = (req, res, next) => {
+  res.send('NOT IMPLEMENTED: Login on POST')
+}

@@ -8,12 +8,12 @@ router.get('/', (req, res, next) => {
   res.redirect('/sign-up')
 })
 
-router.get('/sign-up', userController.create_get)
+router.get('/sign-up', userController.register_get)
 
-router.post('/sign-up', userController.create_post)
+router.post('/sign-up', userController.register_post)
 
-//router.get('/log-in', userController.login_get)
+router.get('/log-in', userController.login_get)
 
-//router.post('/log-in', userController.login_post)
+router.post('/log-in', userController.login_post)
 
 module.exports = router
