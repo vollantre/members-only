@@ -3,9 +3,15 @@ const Message = require('../models/message')
 const { check, body, validationResult } = require('express-validator')
 
 exports.list = async (req, res) => {
-  const messages = await Message.find({})
+  const messages = await Message.find({}).populate('user')
 
-  res.send(messages[1].time_ago)
+  console.log(messages)
+
+  res.render('message_list', { 
+    title: 'Latest messages', 
+    messages, 
+    member: req.user ? (req.user.type === 'member' || req.user.type === 'admin') : false 
+  })
 }
 
 //Display message form
@@ -26,12 +32,8 @@ exports.create_post = [
     }
   },
 
-  //Validate fields
-  check('title', 'Title required').isLength({ min: 1 }).trim(),
-  check('text', 'Text required').isLength({ min: 1 }).trim(),
-
-  //Sanitize fields with wildcard
-  body('*').escape(),
+  //Validate and sanitize text
+  check('text', 'Text required').isLength({ min: 1 }).trim().escape(),
 
   //Process request ater validation and sanitization
   async (req, res, next) => {
@@ -39,7 +41,6 @@ exports.create_post = [
       const errors = validationResult(req)
 
       const msg = new Message({
-        title: req.body.title,
         text: req.body.text,
         user: req.user.id
       })

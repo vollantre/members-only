@@ -4,10 +4,6 @@ const Schema = mongoose.Schema
 
 //Setting up schema for message model
 const messageSchema = new Schema({
-  title: {
-    required: true,
-    type: String
-  },
   text: {
     required: true,
     type: String

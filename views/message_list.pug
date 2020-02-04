@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1.text-primary.text-center= title
+
+  if messages
+    ul
+      for msg in messages
+        li!= msg.user.username

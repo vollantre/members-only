@@ -7,9 +7,6 @@ block content
     div.col-md-4
       form(action="" method="POST")
         div.form-group.form-group-lg
-          label.sr-only(for="title") Title
-          input#title.form-control(type="text" name="title" placeholder="Title" required="true" value=(undefined === msg ? '' : msg.title) autofocus=(msg === undefined ? true : false))
-        div.form-group.form-group-lg
           label.sr-only(for="text") Text
           textarea#text.form-control(name="text" cols="30" rows="5" placeholder="Type your message here..." required="true" value=(undefined === msg ? '' : msg.text))
         button.btn.btn-lg.btn-primary.btn-block(type="submit") Create
