@@ -6,10 +6,10 @@ block content
     div.col-sm-4
     div.col-sm-4
       form(action="" method="POST")
-        div.form-group
+        div.form-group.form-group-lg
           label.sr-only(for="username") Username
           input#username.form-control(type="text" name="username" placeholder="Username" required="true" value=(undefined === user ? '' : user.username) autofocus=(user === undefined ? true : false))
-        div.form-group
+        div.form-group.form-group-lg
           label.sr-only(for="password") Password
           input#password.form-control(type="password" name="password" placeholder="Password" required="true" autofocus=(user === undefined ? false : true))
         button.btn.btn-lg.btn-primary.btn-block(type="submit") Login

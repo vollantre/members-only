@@ -6,21 +6,21 @@ block content
     div.col-md-4
     div.col-md-4
       form(action="" method="POST")
-        div.form-group
+        div.form-group.form-group-lg
           label.sr-only(for="firstName") First name
           input#firstName.form-control(type="text" name="firstName" placeholder="First name" required="true" value=(undefined === user ? '' : user.firstName) autofocus=(user === undefined ? true : false))
-        div.form-group
+        div.form-group.form-group-lg
           label.sr-only(for="lastName") Last Name
           input#lastName.form-control(type="text" name="lastName" placeholder="Last name" required="true"
           value=(undefined === user ? '' : user.lastName))
-        div.form-group
+        div.form-group.form-group-lg
           label.sr-only(for="username") Username
           input#username.form-control(type="text" name="username" placeholder="Username" required="true"
           value=(undefined === user ? '' : user.username))
-        div.form-group
+        div.form-group.form-group-lg
           label.sr-only(for="password") Password
           input#password.form-control(type="password" name="password" placeholder="Password" required="true" autofocus=(user === undefined ? false : true))
-        div.form-group
+        div.form-group.form-group-lg
           label.sr-only(for="confirmPassword") Confirm password
           input#confirmPassword.form-control(type="password" name="confirmPassword" placeholder="Password Confirmation" required="true")
         button.btn.btn-lg.btn-primary.btn-block(type="submit") Submit

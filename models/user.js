@@ -25,8 +25,11 @@ const userSchema = new Schema({
       ref: 'Message'
     }
   ],
-  admin: { type: Boolean },
-  member: { type: Boolean }
+  type: { 
+    type: String, 
+    enum: ['user', 'member', 'admin'], 
+    default: 'user', 
+  }
 })
 
 //Virtual for user's fullname

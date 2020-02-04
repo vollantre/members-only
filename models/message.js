@@ -12,10 +12,20 @@ const messageSchema = new Schema({
     required: true,
     type: String
   },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
   timestamp: {
     type: Date,
     default: moment()
   }
 })
+
+messageSchema
+  .virtual('time_ago')
+  .get(function() {
+    return moment(this.timestamp).fromNow()
+  })
 
 module.exports = mongoose.model('Message', messageSchema)
