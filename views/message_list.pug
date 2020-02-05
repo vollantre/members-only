@@ -3,7 +3,11 @@ extends layout
 block content
   h1.text-primary.text-center= title
 
-  if messages
-    ul
-      for msg in messages
-        li!= msg.user.username
+  for msg in messages
+    div.panel.panel-primary
+      div.panel-heading= member ? msg.user.username : 'Anon'
+      div.panel-body= msg.text
+      div.panel-footer
+        em= msg.time_ago
+  else
+    p.alert.alert-danger.lead There are no messages.

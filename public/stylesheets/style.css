@@ -7,3 +7,11 @@ body {
 a {
   color: #00B7FF;
 }
+
+.panel {
+  overflow-wrap: break-word;
+}
+
+.navbar {
+  border-radius: 0;
+}

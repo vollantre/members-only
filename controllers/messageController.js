@@ -5,8 +5,6 @@ const { check, body, validationResult } = require('express-validator')
 exports.list = async (req, res) => {
   const messages = await Message.find({}).populate('user')
 
-  console.log(messages)
-
   res.render('message_list', { 
     title: 'Latest messages', 
     messages, 
