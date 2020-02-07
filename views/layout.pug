@@ -8,6 +8,25 @@ html(lang="en")
     link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous")
     link(rel="stylesheet" href='/stylesheets/style.css')
   body
-    div.navbar.navbar-inverse
+    nav.navbar.navbar-inverse
+      div.container-fluid
+        div.navbar-header
+          a.navbar-brand(href="/") 
+            span.glyphicon.glyphicon-home
+            |  Home
+          a.navbar-brand(href="/messages") 
+            span.glyphicon.glyphicon-envelope
+            |  Messages
+        if currentUser
+          p.navbar-text Signed in as #{currentUser.username}
+          a.navbar-right.btn.btn-danger.navbar-btn(href="/logout") Log out
+          div
+          if currentUser.type === 'user'
+            a.navbar-right.btn.navbar-btn.btn-link(href='/join_club') Become a Member
+          else if currentUser.type === 'member'
+            a.navbar-right.btn.navbar-btn.btn-link(href='/become_admin') Become Admin
+        else
+          a.btn.btn-primary.navbar-btn.navbar-right(href="/login") Login
+          a.btn.btn-sucess.navbar-btn.navbar-right(href="/register") Register
     div.container-fluid
       block content

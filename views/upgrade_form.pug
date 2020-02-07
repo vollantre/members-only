@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  if welcome
+    div.alert.alert-success.page-header Welcome to our club, #{currentUser.firstName}! Now you can see the author of each message 
+      a.alert-link(href="/messages") here
+  else
+    if to_admin
+      if currentUser.type === 'user'
+        div.alert.alert-success Oops, it does look like you've got into a secret passage to become an   admin
+      h1.text-center Enter secret code('ADMIN')
+    else
+      h1.text-center Enter secret code('MEMBER')
+    div.row
+      div.col-md-4
+      div.col-md-4
+        if welcome
+
+        else
+          form(action="" method="POST")
+            div.form-group.form-group-lg
+              label.sr-only(for="text")
+              input#secretCode.form-control(type="text" name="secretCode" required="true")
+            button.btn.btn-lg.btn-primary.btn-block(type="submit" style="margin-bottom:5px") Submit
+          if error
+            p.alert.alert-danger= error.msg

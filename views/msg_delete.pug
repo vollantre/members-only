@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1.text-primary= title
+  
+  p.alert.alert-danger Do you really want to delete this message by
+    strong  #{msg.user.username}
+    | ?
+
+  div.panel.panel-primary
+    div.panel-heading= (currentUser && currentUser.type !== 'user') ? msg.user.username : 'Anon'
+    div.panel-body= msg.text
+    div.panel-footer
+      em= msg.time_ago
+  
+  form(method='POST' action='')
+    div.form-group
+      input#msg_id.form-control(type='hidden',name='msg_id', required='true', value=msg._id )
+    button.btn.btn-danger(type='submit') Delete

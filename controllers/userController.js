@@ -11,7 +11,7 @@ passport.use(
       const user = await User.findOne({ username })
 
       if(!user){
-        return done(null, false, { msg: "Incorrect username" })
+        return done(null, false, { message: "Incorrect username" })
       }
 
       const match = await bcrypt.compare(password, user.password)
@@ -19,7 +19,7 @@ passport.use(
       if (match) {
         return done(null, user)
       } else {
-        return done(null, false, { msg: "Incorrect password" })
+        return done(null, false, { message: "Incorrect password" })
       }
     } catch (e) {
       done(err)
@@ -41,8 +41,11 @@ exports.passport = passport
 
 //Display sign-up form
 exports.register_get = (req, res) => {
+  if(req.user) {
+    return res.redirect('/')
+  }
   res.render('register_form', { title: "Register to Members Only" })
-}
+} 
 
 //Handle user registration on POST
 exports.register_post = [
@@ -94,11 +97,17 @@ exports.register_post = [
 
       //Checking if there is error
       if(!errors.isEmpty()){//Proceed to rerender the form with some data and error messages
-        res.render('register_form', { title: 'Register to Members Only', user, errors: errors.array() })
+        res.locals = {
+          user: user,
+          errors: errors.array(),
+          title: 'Register to Members Only'
+        }
+        
+        res.render('register_form')
       } else {
         await user.save()
-
-        res.redirect('/')
+        
+        res.redirect('/login')
       }
     } catch(e) {
       next(e)
@@ -107,10 +116,112 @@ exports.register_post = [
 ]
 
 exports.login_get = (req, res) => {
-  res.render('login_form', { title: 'Log in' })
+  if(req.user) {
+    return res.redirect('/')
+  }
+  res.locals = {
+    error_msg: req.flash('error')[0],
+    title: 'Log in'
+  }
+  res.render('login_form')
 }
 
 exports.login_post = passport.authenticate("local", {
-  successRedirect: "/messages/new",
-  failureRedirect: "/login"
+  successRedirect: "/messages",
+  failureRedirect: "/login",
+  failureFlash: 'Invalid username or password.'
 })
+
+exports.join_get = (req, res) => {
+  if (req.user) {
+    if(req.user.type === 'user') {
+      return res.render('upgrade_form', { title: 'Join club' })
+    }
+    return res.redirect('/messages')
+  }
+  res.redirect('/login')
+}
+
+exports.join_post = [
+  validator.check('secretCode')
+    .custom(value => {
+      if(value !== process.env.MEMBER_CODE) {
+        throw new Error("Incorrect ultra-secret passcode")
+      }
+      return value
+    }),
+
+  async (req, res, next) => {
+    try {
+      const { currentUser } = res.locals
+      const errors = validator.validationResult(req)
+
+      if(!errors.isEmpty()) {
+        return res.render('upgrade_form', { title: 'Join Club', error: errors.array()[0] })
+      }
+
+      const user = new User({
+        ...currentUser,
+        _id: currentUser._id,
+        type: 'member'
+      })
+
+      console.log(user)
+
+      await User.findByIdAndUpdate(currentUser._id, user)
+
+      return res.render('upgrade_form', { title: 'Welcome', welcome: true })
+    } catch(e) {
+      next(e)
+    }
+  }
+]
+
+exports.become_admin_get = (req, res) => {
+  if (req.user) {
+    if(req.user.type !== 'admin') {
+      return res.render('upgrade_form', { title: 'Become Admin', to_admin: true })
+    }
+    return res.redirect('/messages')
+  }
+  res.redirect('/login')
+}
+
+exports.become_admin_post = [
+  validator.check('secretCode')
+    .custom(value => {
+      if(value !== process.env.ADMIN_CODE) {
+        throw new Error("Incorrect ultra-secret code")
+      }
+      return value
+    }),
+
+  async (req, res, next) => {
+    try {
+      const { currentUser } = res.locals
+      const errors = validator.validationResult(req)
+
+      if(!errors.isEmpty()) {
+        return res.render('upgrade_form', { title: 'Become Admin', to_admin: true, error: errors.array()[0] })
+      }
+
+      const user = new User({
+        ...currentUser,
+        _id: currentUser._id,
+        type: 'admin'
+      })
+
+      console.log(user)
+
+      await User.findByIdAndUpdate(currentUser._id, user)
+
+      return res.redirect('/messages')
+    } catch(e) {
+      next(e)
+    }
+  }
+]
+exports.logout = (req, res, next) => {
+  req.logout()
+  res.redirect('/login')
+}

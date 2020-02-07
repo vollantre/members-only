@@ -15,3 +15,7 @@ a {
 .navbar {
   border-radius: 0;
 }
+
+#message_list {
+  margin-top: 10px;
+}

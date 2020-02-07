@@ -4,18 +4,25 @@ const { check, body, validationResult } = require('express-validator')
 
 exports.list = async (req, res) => {
   const messages = await Message.find({}).populate('user')
+  messages.reverse()
 
-  res.render('message_list', { 
+  res.locals = { 
     title: 'Latest messages', 
-    messages, 
+    messages,
+    currentUser: req.user,
     member: req.user ? (req.user.type === 'member' || req.user.type === 'admin') : false 
-  })
+  }
+  res.render('message_list')
 }
 
 //Display message form
 exports.create_get = (req, res) => {
   if (req.user) {
-    return res.render('new-msg_form', { title: 'Create new message' })
+    res.locals = {
+      title: 'Create new message',
+      currentUser: req.user
+    }
+    return res.render('new-msg_form')
   }
   res.redirect('/login')
 } 
@@ -45,7 +52,12 @@ exports.create_post = [
 
       //There's error, rerender the form with some error messages to the user
       if(!errors.isEmpty()) {
-        res.render('new-msg_form', { title: 'Create new message', errors: errors.array(), msg })
+        res.locals = {
+          title: 'Create new message',
+          errors: errors.array(),
+          msg
+        }
+        res.render('new-msg_form')
       } else {
         await msg.save()
 
@@ -56,3 +68,30 @@ exports.create_post = [
     }
   }
 ]
+
+//Display message delete form on GET
+exports.delete_get = async (req, res, next) => {
+  try {
+    if(req.user) {
+      const msg = await Message.findById(req.params.id).populate('user')
+      if (msg && req.user.type === 'admin') {
+        return res.render('msg_delete', { title: 'Delete Message', msg })
+      }
+      return res.redirect('/messages')
+    }
+    res.redirect('/login')
+  } catch (e) {
+    next(e)
+  }
+}
+
+//Handle message delete on POST
+exports.delete_post = async (req, res, next) => {
+  try {
+    await Message.findByIdAndRemove(req.body.msg_id)
+
+    res.redirect('/messages')
+  } catch (e) {
+    next(e)
+  }
+}
