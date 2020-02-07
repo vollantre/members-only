@@ -49,6 +49,13 @@ exports.register_get = (req, res) => {
 
 //Handle user registration on POST
 exports.register_post = [
+  (req, res, next) => {
+    if(!req.user) {
+      next()
+    } else {
+      res.status(400).redirect('/messages')
+    }
+  },
   //Validate fields
   validator.check('firstName', 'First name required').isLength({ min: 1 }).trim(),
   validator.check('lastName', 'Last name required').isLength({ min: 1 }).trim(),
@@ -143,6 +150,14 @@ exports.join_get = (req, res) => {
 }
 
 exports.join_post = [
+  (req, res, next) => {
+    if(req.user) {
+      next()
+    } else {
+      res.status(400).redirect('/login')
+    }
+  },
+
   validator.check('secretCode')
     .custom(value => {
       if(value !== process.env.MEMBER_CODE) {
@@ -188,6 +203,14 @@ exports.become_admin_get = (req, res) => {
 }
 
 exports.become_admin_post = [
+  (req, res, next) => {
+    if(req.user) {
+      next()
+    } else {
+      res.status(400).redirect('/login')
+    }
+  },
+
   validator.check('secretCode')
     .custom(value => {
       if(value !== process.env.ADMIN_CODE) {
